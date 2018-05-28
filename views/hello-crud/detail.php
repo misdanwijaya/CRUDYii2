@@ -44,8 +44,8 @@ $this->title = "Hello CRUD";
 
             foreach ($team->gallery as $item){
                 $items[] = [
-                        'content' => '<img style="width:300px;" src="'.$item->filepath.'"/>',
-                        'caption' => '<h4>'.$item->name.'</h4><p>'.$item->description.'</p>',
+                        'content' => '<img style="width:300px;" src="' . Yii::getAlias('@web') . '/' . $item->filepath . '"/>',
+                        'caption' => '<h3>'.$item->name.'</h4><p>'.$item->description.'</p>',
                     ];
             }
 

@@ -16,7 +16,9 @@ class TeamGalleriesForm extends Model
         return [
             ['name', 'required','message' => 'Nama gambar gak boleh kosong'],
             ['name', 'string','max'=>'50'],
+
             ['description', 'string'],
+            
             ['photo', 'file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024],
         ];
     }

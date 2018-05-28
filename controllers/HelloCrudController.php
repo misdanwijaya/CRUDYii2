@@ -31,10 +31,10 @@ class HelloCrudController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index',],
+                'only' => ['index', 'detail', 'add', 'edit', 'delete', 'delete-all', 'gallery', 'add-photo', 'edit-photo', 'delete-photo'],
                 'rules' => [
                     [
-                        'actions' => ['index',],
+                        'actions' => ['index', 'detail', 'add', 'edit', 'delete', 'delete-all', 'gallery', 'add-photo', 'edit-photo', 'delete-photo'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -42,6 +42,7 @@ class HelloCrudController extends Controller
             ],
         ];
     }
+
 
     //list awal
     public function actionIndex()
