@@ -6,10 +6,13 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
 
 use app\models\Teams;
 use app\models\Leagues;
 use app\models\TeamsForm;
+use app\models\TeamGalleries;
+use app\models\TeamGalleriesForm;
 
 class HelloCrudController extends Controller
 {
@@ -130,5 +133,78 @@ class HelloCrudController extends Controller
     {
         Teams::deleteAll();
         return $this->redirect(Url::to(['hello-crud/index']));
+    }
+
+    //untuk galeri
+    public function actionGallery($id)
+    {
+        $team = Teams::findOne(['id' => $id]);
+        $galleries = TeamGalleries::find()->where(['team_id' => $id])->orderBy('id')->all();
+        return $this->render('gallery', ['team'=>$team, 'galleries'=>$galleries]);
+    }
+
+    //tambah galeri
+    public function actionAddPhoto($id)
+    {
+        $forms = new TeamGalleriesForm();
+
+        if ($forms->load(Yii::$app->request->post()) && $forms->validate())
+        {
+            $request = Yii::$app->request;
+            $forms->photo = UploadedFile::getInstance($forms, 'photo');
+
+            $team = new TeamGalleries();
+            $team->name = $request->post('TeamGalleriesForm')['name'];
+            $team->description = $request->post('TeamGalleriesForm')['description'];
+            $team->team_id = $id;
+            $team->save();
+
+            $filepath = 'upload/'.$forms->photo->baseName.'_'.sha1($team->id).'.'.$forms->photo->extension;
+            $forms->photo->saveAs($filepath);
+            $team->filepath = $filepath;
+            $team->save();
+
+            return $this->redirect(Url::to(['hello-crud/gallery', 'id'=>$id]));
+        }
+        else 
+        {
+            $team = Teams::findOne(['id' => $id]);
+            return $this->render('add_photo', ['team'=>$team, 'forms'=>$forms]);
+        }
+    }
+
+    //edit photo
+    public function actionEditPhoto($id, $gal_id)
+    {
+
+        $forms = new TeamGalleriesForm();
+
+        if ($forms->load(Yii::$app->request->post()) && $forms->validate())
+        {
+            $request = Yii::$app->request;
+
+            $photo = TeamGalleries::findOne(['id'=>$gal_id]);
+            $photo->name = $request->post('TeamGalleriesForm')['name'];
+            $photo->description = $request->post('TeamGalleriesForm')['description'];
+            $photo->save();
+
+            return $this->redirect(Url::to(['hello-crud/gallery', 'id'=>$id]));
+        }
+        else 
+        {
+            $team = Teams::findOne(['id' => $id]);
+            $photo = TeamGalleries::findOne(['id'=>$gal_id]);
+            return $this->render('edit_photo', ['team'=>$team, 'forms'=>$forms, 'photo'=>$photo]);
+        }
+    }
+
+    //delete photo
+    public function actionDeletePhoto($id, $gal_id)
+    {
+        $photo = TeamGalleries::findOne(['id'=>$gal_id]);
+        unlink($photo->filepath);
+        $photo->delete();
+
+        return $this->redirect(Url::to(['hello-crud/gallery', 'id'=>$id]));        
     }
 }

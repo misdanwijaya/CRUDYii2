@@ -2,6 +2,7 @@
 
 use yii\widgets\Breadcrumbs;
 use yii\helpers\Url;
+use yii\bootstrap\Carousel;
 
 $this->title = "Hello CRUD";
 
@@ -30,18 +31,35 @@ $this->title = "Hello CRUD";
 <div>   
     <div class="col-md-2">
         <div class="list-group">
+          <a href="<?php echo Url::to(['hello-crud/gallery', 'id'=>$team['id']]); ?>" class="list-group-item"><i class="glyphicon glyphicon-eye-open"></i> View Gallery</a>
           <a href="<?php echo Url::to(['hello-crud/edit', 'id'=>$team['id']]); ?>" class="list-group-item"><i class="glyphicon glyphicon-pencil"></i> Edit Team</a>
           <a href="<?php echo Url::to(['hello-crud/delete', 'id'=>$team['id']]); ?>" class="list-group-item"><i class="glyphicon glyphicon-trash"></i> Delete Team</a>
         </div>
     </div>
     <div class="col-md-10">
+        <div class="col-md-4">
+            <?php
+
+            $items = [];
+
+            foreach ($team->gallery as $item){
+                $items[] = [
+                        'content' => '<img style="width:300px;" src="'.$item->filepath.'"/>',
+                        'caption' => '<h4>'.$item->name.'</h4><p>'.$item->description.'</p>',
+                    ];
+            }
+
+            echo Carousel::widget([
+                'items' => $items,
+            ]);
+
+            ?>
+        </div>
 
         <div class="col-md-8">
             <p><b>League</b>: <?php echo $team->league['name'] ?></p>
             <p><b>Country</b>: <?php echo $team->country ?></p>
             <p><?php echo $team['description'] ?></p>
 
-        </div>
-
-
+        </div>      
 </div>
